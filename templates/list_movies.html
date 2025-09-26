@@ -8,7 +8,7 @@
 
 </head>
   <body>
-  <h1>Welcome to the movie database!</h1>
+  <h1>Movies for {{name}}</h1>
   {% if message %}
   <h4 class="normal-heading"><em>{{ message }}</em></h4>
   {% endif %}
@@ -17,56 +17,32 @@
   <p>{{ error }}</p>
   {% endif %}
 
-<!-- Buttons -->
-<ul>
-<div class="add">
-<div class="search-container">
-<form method="get" action={{ url_for('search_books') }}>
-<input type="text" name="search" placeholder="Search.." name="search">
-<button type="submit">Search</button>
-</form>
-</div>
-<a href="/add_book">
-<button type="button">Add New Book</button>
-</a>
-<a href="/add_author">
-<button type="button">Add New Author</button>
-</a>
-<a href="{{ url_for('sort_books', by='title') }}">
-<button type="button">Sort by Title</button>
-</a>
-<a href="{{ url_for('sort_books', by='author') }}">
-<button type="button">Sort by Author</button>
-</a>
-</div>
 
-<ol class="books-grid">
-{% for book in books %}
-<li>
-<div class="book"> 
-<div class="title-name"> 
-<img class="book_poster"
-src="https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg"
-alt="Book Cover" />
+<div class="add-movie">
+    <form method="POST" action="/users/{{ user.id }}/movies">
+        <label for="movie_name">Enter movie name:</label>
+        <input type="text" id="movie_name" name="title" placeholder="Add movie">
+            <button type="submit">Add movie</button>
+    </form> 
+ <div>
 
-<div class="book-info">
-<div class="title">
-<h3>{{ book.title }}</h3>
-</div>
-<div class="name">
-<p>{{ book.author.name }}</p>
-</div>
-<div class="delete" >
-<form action="/book/{{ book.book_id }}/delete" method="POST">
-<input type="submit" value="Delete">
-</form>
-</div>
-</div>
-</div>
-</div>
-</li>
+
+<ol class="movie-grid">
+  {% for movie in movies %}
+    <li>
+<div class="movie">
+<img class="movie-poster"
+src="{{ movie.poster_url }}"
+title=""/>
+<div class="movie-title">{{ movie.name }}</div>
+<div class="movie-director">{{ movie.director }}</div>
+<div class="movie-year">{{ movie.year }}</div>
+</div></li>
 {% endfor %}
 </ol>
+
+
+
 
 </body>
 </html>
