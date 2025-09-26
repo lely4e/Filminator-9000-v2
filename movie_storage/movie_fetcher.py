@@ -15,8 +15,5 @@ def fetch_movie(title):
     data = response.json()
     if data.get("Response") == "True":
         return (data["Title"], data["Writer"], data["Year"], data["Poster"])
-        # return data
+
     return None
-
-
-# print(fetch_movie("Titanic"))

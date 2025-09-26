@@ -1,3 +1,4 @@
+from errors.custom_errors import MyCustomError
 from models import db, User, Movie
 from sqlalchemy import exc, and_
 
@@ -32,8 +33,8 @@ class DataManager:
                 .filter(and_(Movie.name == name, Movie.user_id == user_id))
                 .first()
             )
-            if not movie_in_database:
 
+            if not movie_in_database:
                 add_movie = Movie(
                     name=name,
                     director=director,
@@ -45,9 +46,9 @@ class DataManager:
                 db.session.add(add_movie)
                 db.session.commit()
             else:
-                print("Movie already exists in database")
+                raise MyCustomError("Movie is already in database!")
         else:
-            print("Movie doesn't exist in API")
+            raise MyCustomError("Movie doesn't exist in API")
 
         return self.get_movies(user_id)
 

@@ -14,7 +14,7 @@ class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100), nullable=False, unique=True)
 
 
 class Movie(db.Model):
@@ -31,7 +31,7 @@ class Movie(db.Model):
     __tablename__ = "movies"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
+    name = db.Column(db.String(100), nullable=False)
     director = db.Column(db.String(100), nullable=False)
     year = db.Column(db.Integer, nullable=False)
     poster_url = db.Column(db.String, nullable=False)

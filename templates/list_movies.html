@@ -8,6 +8,8 @@
 
 </head>
   <body>
+  <a href="{{ url_for('home') }}">Back to users</a>
+
   <h1>Movies for {{name}}</h1>
   {% if message %}
   <h4 class="normal-heading"><em>{{ message }}</em></h4>
@@ -37,6 +39,12 @@ title=""/>
 <div class="movie-title">{{ movie.name }}</div>
 <div class="movie-director">{{ movie.director }}</div>
 <div class="movie-year">{{ movie.year }}</div>
+
+<div class="delete" >
+<form action="/users/{{ user.id }}/movies/{{ movie.id }}/delete" method="POST">
+<input type="submit" value="Delete">
+</form>
+</div>
 </div></li>
 {% endfor %}
 </ol>

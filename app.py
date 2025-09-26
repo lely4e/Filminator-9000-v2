@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from data_manager import DataManager
 from models import db, Movie, User
 import os
+from errors.custom_errors import MyCustomError
 
 
 app = Flask(__name__)
@@ -12,11 +13,11 @@ app.config["SQLALCHEMY_DATABASE_URI"] = (
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-db.init_app(
-    app
-)  # Link the database and the app. This is the reason you need to import db from models
+# Link the database and the app
+db.init_app(app)
 
-data_manager = DataManager()  # Create an object of your DataManager class
+# Create an object of your DataManager class
+data_manager = DataManager()
 
 
 @app.route("/", methods=["GET"])
@@ -31,15 +32,12 @@ def add_user():
         user_name = request.form.get("user_name")
         add_user = data_manager.create_user(user_name)
         users = data_manager.get_users()
-        # str(users)  # Temporarily returning users as a string
         return redirect(url_for("home", message="User added"))
 
 
 @app.route("/users/<int:user_id>/movies", methods=["GET"])
-# : When you click on a user name, the app retrieves that user’s
-# list of favorite movies and displays it.
 def list_movies(user_id):
-    """Page represents all movies"""
+    """Page represents all movies from specific user"""
     user = db.session.get(User, user_id)
     if not user:
         return redirect(url_for("home", message="User not found."))
@@ -53,8 +51,7 @@ def list_movies(user_id):
 
 @app.route("/users/<int:user_id>/movies", methods=["POST"])
 def add_movie(user_id):
-    #: Add a new movie to a user’s list of favorite movies.
-
+    """Add a new movie to a user’s list of favorite movies."""
     user = db.session.get(User, user_id)
     if not user:
         return redirect(
@@ -67,10 +64,13 @@ def add_movie(user_id):
             url_for("list_movies", user_id=user_id, message="No title found.")
         )
 
-    data_manager.add_movie(user_id, title)
-    return redirect(
-        url_for("list_movies", user_id=user_id, message="Movie added successfully")
-    )
+    try:
+        data_manager.add_movie(user_id, title)
+        return redirect(
+            url_for("list_movies", user_id=user_id, message="Movie added successfully")
+        )
+    except MyCustomError as e:
+        return redirect(url_for("list_movies", user_id=user_id, message=f"{e}"))
 
 
 # @app.route('/users/<int:user_id>/movies/<int:movie_id>/update', methods=['POST'])
@@ -78,8 +78,23 @@ def add_movie(user_id):
 # without depending on OMDb for corrections.
 
 
-# @app.route('/users/<int:user_id>/movies/<int:movie_id>/delete', methods=['POST'])
-#: Remove a specific movie from a user’s favorite movie list.
+@app.route("/users/<int:user_id>/movies/<int:movie_id>/delete", methods=["POST"])
+def delete_movie(user_id, movie_id):
+    """Removes a specific movie from a user’s favorite movie list."""
+    user = db.session.get(User, user_id)
+    if user:
+        movies = data_manager.get_movies(user_id)
+        for movie in movies:
+            if movie.id == movie_id:
+
+                data_manager.delete_movie(movie_id)
+                return redirect(
+                    url_for(
+                        "list_movies",
+                        user_id=user_id,
+                        message="Movie deleted successfully.",
+                    )
+                )
 
 
 if __name__ == "__main__":
