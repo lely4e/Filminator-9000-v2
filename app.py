@@ -27,6 +27,7 @@ data_manager = DataManager()
 
 @app.route("/", methods=["GET"])
 def home():
+    """Shows the home page with users."""
     users = data_manager.get_users()
     return render_template(
         "home.html", users=users, message=request.args.get("message")
@@ -35,6 +36,7 @@ def home():
 
 @app.route("/users", methods=["POST"])
 def add_user():
+    """Add user to the database."""
     user_name = request.form.get("user_name")
 
     try:
@@ -47,7 +49,7 @@ def add_user():
 
 @app.route("/users/<int:user_id>/movies", methods=["GET"])
 def list_movies(user_id):
-    """Page represents all movies from specific user"""
+    """Page represents all movies from specific user."""
     user = db.session.get(User, user_id)
     if not user:
         return redirect(url_for("home", message="User not found."))
@@ -92,14 +94,7 @@ def update_movie(user_id, movie_id):
         except (MovieNotInDatabaseError, FailedQueryError) as e:
             message = e
 
-        return redirect(
-            url_for(
-                "list_movies",
-                user_id=user_id,
-                title=title,
-                message=message,
-            )
-        )
+        return redirect(url_for("list_movies", user_id=user_id, message=message))
     else:
         return redirect(url_for("home", message="User not found."))
 
@@ -124,6 +119,11 @@ def delete_movie(user_id, movie_id):
         )
     else:
         return redirect(url_for("home", message="User not found."))
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html", message=e), 404
 
 
 if __name__ == "__main__":

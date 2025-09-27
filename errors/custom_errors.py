@@ -20,7 +20,7 @@ class MovieNotInDatabaseError(Exception):
 
 
 class FailedQueryError(Exception):
-    """Custom exception if database query fails"""
+    """Custom exception if database query fails."""
 
     def __init__(self, message="Something went wrong"):
         super().__init__(message)
