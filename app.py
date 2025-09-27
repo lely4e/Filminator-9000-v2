@@ -2,7 +2,12 @@ from flask import Flask, render_template, request, redirect, url_for
 from data_manager import DataManager
 from models import db, Movie, User
 import os
-from errors.custom_errors import MyCustomError
+from errors.custom_errors import (
+    MovieInDatabaseError,
+    MovieNotInDatabaseError,
+    NoMovieInApiError,
+    FailedQueryError,
+)
 
 
 app = Flask(__name__)
@@ -23,16 +28,21 @@ data_manager = DataManager()
 @app.route("/", methods=["GET"])
 def home():
     users = data_manager.get_users()
-    return render_template("home.html", users=users)
+    return render_template(
+        "home.html", users=users, message=request.args.get("message")
+    )
 
 
 @app.route("/users", methods=["POST"])
 def add_user():
-    if request.method == "POST":
-        user_name = request.form.get("user_name")
-        add_user = data_manager.create_user(user_name)
-        users = data_manager.get_users()
-        return redirect(url_for("home", message="User added"))
+    user_name = request.form.get("user_name")
+
+    try:
+        data_manager.create_user(user_name)
+        message = "User added."
+    except FailedQueryError as e:
+        message = e
+    return redirect(url_for("home", message=message))
 
 
 @app.route("/users/<int:user_id>/movies", methods=["GET"])
@@ -53,29 +63,45 @@ def list_movies(user_id):
 def add_movie(user_id):
     """Add a new movie to a user’s list of favorite movies."""
     user = db.session.get(User, user_id)
-    if not user:
-        return redirect(
-            url_for("list_movies", user_id=user_id, message="No user found.")
-        )
-
     title = request.form.get("title")
-    if not title:
+
+    if user and title:
+        try:
+            data_manager.add_movie(user_id, title)
+            message = "Movie added successfully"
+        except (MovieInDatabaseError, NoMovieInApiError, FailedQueryError) as e:
+            message = e
+    elif not user:
+        message = "User not found."
+    else:
+        message = "Title not found."
+
+    return redirect(url_for("list_movies", user_id=user_id, message=message))
+
+
+@app.route("/users/<int:user_id>/movies/<int:movie_id>/update", methods=["POST"])
+def update_movie(user_id, movie_id):
+    """Modify the title of a specific movie in a user’s list,
+    without depending on OMDb for corrections."""
+    user = db.session.get(User, user_id)
+    if user:
+        title = request.form.get("title")
+        try:
+            data_manager.update_movie(movie_id, title)
+            message = "Movie updated successfully."
+        except (MovieNotInDatabaseError, FailedQueryError) as e:
+            message = e
+
         return redirect(
-            url_for("list_movies", user_id=user_id, message="No title found.")
+            url_for(
+                "list_movies",
+                user_id=user_id,
+                title=title,
+                message=message,
+            )
         )
-
-    try:
-        data_manager.add_movie(user_id, title)
-        return redirect(
-            url_for("list_movies", user_id=user_id, message="Movie added successfully")
-        )
-    except MyCustomError as e:
-        return redirect(url_for("list_movies", user_id=user_id, message=f"{e}"))
-
-
-# @app.route('/users/<int:user_id>/movies/<int:movie_id>/update', methods=['POST'])
-#: Modify the title of a specific movie in a user’s list,
-# without depending on OMDb for corrections.
+    else:
+        return redirect(url_for("home", message="User not found."))
 
 
 @app.route("/users/<int:user_id>/movies/<int:movie_id>/delete", methods=["POST"])
@@ -83,18 +109,21 @@ def delete_movie(user_id, movie_id):
     """Removes a specific movie from a user’s favorite movie list."""
     user = db.session.get(User, user_id)
     if user:
-        movies = data_manager.get_movies(user_id)
-        for movie in movies:
-            if movie.id == movie_id:
+        try:
+            data_manager.delete_movie(movie_id)
+            message = "Movie deleted successfully."
+        except (MovieNotInDatabaseError, FailedQueryError) as e:
+            message = e
 
-                data_manager.delete_movie(movie_id)
-                return redirect(
-                    url_for(
-                        "list_movies",
-                        user_id=user_id,
-                        message="Movie deleted successfully.",
-                    )
-                )
+        return redirect(
+            url_for(
+                "list_movies",
+                user_id=user_id,
+                message=message,
+            )
+        )
+    else:
+        return redirect(url_for("home", message="User not found."))
 
 
 if __name__ == "__main__":

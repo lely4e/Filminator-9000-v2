@@ -1,7 +1,11 @@
-from errors.custom_errors import MyCustomError
+from errors.custom_errors import (
+    MovieInDatabaseError,
+    NoMovieInApiError,
+    MovieNotInDatabaseError,
+    FailedQueryError,
+)
 from models import db, User, Movie
 from sqlalchemy import exc, and_
-
 from movie_storage.movie_fetcher import fetch_movie
 
 
@@ -10,12 +14,19 @@ class DataManager:
     def create_user(self, name):
         # Creates a User
         new_user = User(name=name)
-        db.session.add(new_user)
-        db.session.commit()
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+        except exc.SQLAlchemyError:
+            db.session.rollback()
+            raise FailedQueryError("Could not add the user")
 
     def get_users(self):
         # Return a list of all users in your database.
         return db.session.query(User).all()
+
+    def get_movie(self, movie_id):
+        return db.session.get(Movie, movie_id)
 
     def get_movies(self, user_id):
         # Return a list of all movies of a specific user.
@@ -43,12 +54,16 @@ class DataManager:
                     user_id=user_id,
                 )
 
-                db.session.add(add_movie)
-                db.session.commit()
+                try:
+                    db.session.add(add_movie)
+                    db.session.commit()
+                except exc.SQLAlchemyError:
+                    db.session.rollback()
+                    raise FailedQueryError("Could not add the movie")
             else:
-                raise MyCustomError("Movie is already in database!")
+                raise MovieInDatabaseError("Movie is already in database!")
         else:
-            raise MyCustomError("Movie doesn't exist in API")
+            raise NoMovieInApiError("Movie doesn't exist in API")
 
         return self.get_movies(user_id)
 
@@ -59,9 +74,11 @@ class DataManager:
             try:
                 movie.name = new_title
                 db.session.commit()
-            except exc.SQLAlchemyError as e:
+            except exc.SQLAlchemyError:
                 db.session.rollback()
-                print("Movie doesn't exist in database")
+                raise FailedQueryError("Could not update the movie")
+        else:
+            raise MovieNotInDatabaseError("Movie doesn't exist in database")
 
     def delete_movie(self, movie_id):
         # Delete the movie from the user’s list of favorites.
@@ -72,4 +89,6 @@ class DataManager:
                 db.session.commit()
             except exc.SQLAlchemyError as e:
                 db.session.rollback()
-                print("Cannot delete the movie")
+                raise FailedQueryError("Could not delete the movie")
+        else:
+            raise MovieNotInDatabaseError("Movie doesn't exist in database")

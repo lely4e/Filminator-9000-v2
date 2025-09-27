@@ -10,13 +10,13 @@
 <body>
     <header>
         <img src="static/logo.png" alt="Filminator 9000 v2" width="300" />
-        <h5>No time travel required</h5>
+        <h5>NO TIME TRAVEL REQUIRED</h5>
     </header>
 
 <h1> Users </h1>
- {% if message %}
+{% if message %}
   <h4 class="normal-heading"><em>{{ message }}</em></h4>
-  {% endif %}
+{% endif %}
 
 <div class="add-user">
     <form method="POST" action="/users">

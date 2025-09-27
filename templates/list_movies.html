@@ -36,7 +36,16 @@
 <img class="movie-poster"
 src="{{ movie.poster_url }}"
 title=""/>
-<div class="movie-title">{{ movie.name }}</div>
+
+<div class="update">
+    <form method="POST" action="/users/{{ user.id }}/movies/{{ movie.id }}/update">
+        <input type="text" id="movie_name" name="title" value={{ movie.name }} placeholder="Movie title">
+            <button type="submit">Update</button>
+    </form> 
+ <div>
+
+
+
 <div class="movie-director">{{ movie.director }}</div>
 <div class="movie-year">{{ movie.year }}</div>
 
