@@ -1,6 +1,6 @@
-![This is an alt text.](logo.png "Filminator 9000 v2")
-![This is an alt text.](Filminator_users.png "Filminator 9000 v2")
-![This is an alt text.](Filminator_movies.png "Filminator 9000 v2")
+![This is an alt text.](images/logo.png "Filminator 9000 v2")
+![This is an alt text.](images/Filminator_movies.pngFilminator_users.png "Filminator 9000 v2")
+![This is an alt text.](images/Filminator_movies.png "Filminator 9000 v2")
 
 # 🎬 FILMINATOR 9000 v2 – Movie Manager Web App – Flask + SQLAlchemy + OMDb API
 Filminator 9000 is a Python-based Flask web application that allows users to manage their own movie database through a sleek and interactive browser interface. Instead of a command-line tool, the project now delivers a fully dynamic web experience, using Flask for routing and templating, and SQLAlchemy as the database ORM.
