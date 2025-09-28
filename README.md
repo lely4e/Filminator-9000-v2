@@ -1,5 +1,5 @@
 ![This is an alt text.](images/logo.png "Filminator 9000 v2")
-![This is an alt text.](images/Filminator_movies.pngFilminator_users.png "Filminator 9000 v2")
+![This is an alt text.](images/Filminator_users.png "Filminator 9000 v2")
 ![This is an alt text.](images/Filminator_movies.png "Filminator 9000 v2")
 
 # 🎬 FILMINATOR 9000 v2 – Movie Manager Web App – Flask + SQLAlchemy + OMDb API
