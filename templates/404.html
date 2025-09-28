@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Filminator 9000 v2</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+  </head>
+
+  <body style="background-color: #000000;">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    <header>
+      <div class="text-center mt-4">
+        <a href="/"><img src="/static/page_not_found.png" class="img-fluid" alt="Filminator 9000 v2" width="500" /></a>
+        <h6 style="color: #6f6f6fff; font-size: medium;">TIME TRAVEL REQUIRED</h6>
+      </div>
+    </header>
+
+    {% if message %}
+      <h6 class="text-center" style="color: #afc5f7ff; font-size: medium;"><em>{{ message }}</em></h6>
+    {% endif %}
+    <div class="container mt-4" style="color: #d1d1d1ff;">
+      <a class="icon-link" href="{{ url_for('index') }}">
+        <svg xmlns="http://www.w3.org/2000/svg" class="bi" viewBox="0 0 16 16" aria-hidden="true" width="16" height="16" fill="currentColor">
+          <path fill-rule="evenodd" d="M15 8a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 7.5H14.5A.5.5 0 0 1 15 8z" />
+        </svg>Back to users
+      </a>
+    </div>
+  </body>
+</html>

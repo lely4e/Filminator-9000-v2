@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from data_manager import DataManager
-from models import db, Movie, User
+from models.models import db, User, Movie
 import os
 from errors.custom_errors import (
     MovieInDatabaseError,
@@ -26,11 +26,11 @@ data_manager = DataManager()
 
 
 @app.route("/", methods=["GET"])
-def home():
+def index():
     """Shows the home page with users."""
     users = data_manager.get_users()
     return render_template(
-        "home.html", users=users, message=request.args.get("message")
+        "index.html", users=users, message=request.args.get("message")
     )
 
 
@@ -44,7 +44,7 @@ def add_user():
         message = "User added."
     except FailedQueryError as e:
         message = e
-    return redirect(url_for("home", message=message))
+    return redirect(url_for("index", message=message))
 
 
 @app.route("/users/<int:user_id>/movies", methods=["GET"])
@@ -52,7 +52,7 @@ def list_movies(user_id):
     """Page represents all movies from specific user."""
     user = db.session.get(User, user_id)
     if not user:
-        return redirect(url_for("home", message="User not found."))
+        return redirect(url_for("index", message="User not found."))
 
     message = request.args.get("message")
     movies = data_manager.get_movies(user_id)
@@ -96,7 +96,7 @@ def update_movie(user_id, movie_id):
 
         return redirect(url_for("list_movies", user_id=user_id, message=message))
     else:
-        return redirect(url_for("home", message="User not found."))
+        return redirect(url_for("index", message="User not found."))
 
 
 @app.route("/users/<int:user_id>/movies/<int:movie_id>/delete", methods=["POST"])
@@ -118,7 +118,7 @@ def delete_movie(user_id, movie_id):
             )
         )
     else:
-        return redirect(url_for("home", message="User not found."))
+        return redirect(url_for("index", message="User not found."))
 
 
 @app.errorhandler(404)

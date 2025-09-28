@@ -4,7 +4,7 @@ from errors.custom_errors import (
     MovieNotInDatabaseError,
     FailedQueryError,
 )
-from models import db, User, Movie
+from models.models import db, User, Movie
 from sqlalchemy import exc, and_
 from movie_storage.movie_fetcher import fetch_movie
 
