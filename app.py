@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from data_manager import DataManager
-from models.models import db, User, Movie
+from models.models import db, User
 import os
 from errors.custom_errors import (
     MovieInDatabaseError,
@@ -95,8 +95,7 @@ def update_movie(user_id, movie_id):
             message = e
 
         return redirect(url_for("list_movies", user_id=user_id, message=message))
-    else:
-        return redirect(url_for("index", message="User not found."))
+    return redirect(url_for("index", message="User not found."))
 
 
 @app.route("/users/<int:user_id>/movies/<int:movie_id>/delete", methods=["POST"])
