@@ -10,6 +10,10 @@ The app connects to the OMDb API to fetch detailed movie information — includi
 Whether you're a film enthusiast or learning web development, MoviWeb demonstrates how to build and deploy a full-stack Flask app that combines real-world APIs, database integration, and user-friendly UI — all in one project.
 
 
+# 🛠 Check it out:
+https://lely4e.pythonanywhere.com/
+
+
 # 💡 What Problem Does It Solve?
 * Search and add movies using the OMDb API
 * Store movie data in a structured SQL database
